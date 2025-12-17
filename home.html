@@ -17,7 +17,7 @@
 
       body {
         font-family: "Quicksand", sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+        background: #f8fafc;
         overflow: hidden;
       }
 
@@ -45,19 +45,19 @@
       .logo-icon {
         width: 42px;
         height: 42px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 20px;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba(90, 103, 216, 0.35);
       }
 
       .logo-text {
         font-weight: 700;
         font-size: 17px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -83,9 +83,9 @@
 
       .search-box input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #5a67d8;
         background: #fff;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.15);
       }
 
       .search-box::before {
@@ -117,21 +117,21 @@
 
       .btn:hover {
         background: #f0f4f8;
-        border-color: #667eea;
-        color: #667eea;
+        border-color: #5a67d8;
+        color: #5a67d8;
       }
 
       .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
         color: #fff;
         border: none;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba(90, 103, 216, 0.35);
       }
 
       .btn-primary:hover {
         opacity: 0.9;
         transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 6px 16px rgba(90, 103, 216, 0.45);
       }
 
       #canvas {
@@ -140,7 +140,18 @@
         left: 0;
         right: 0;
         bottom: 0;
-        cursor: grab;
+        cursor: grab !important;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+
+      #canvas.dragging {
+        cursor: grabbing !important;
+      }
+
+      #canvas:active {
+        cursor: grabbing !important;
       }
 
       .panel {
@@ -267,7 +278,7 @@
       }
       .tt-hint {
         font-size: 11px;
-        color: #667eea;
+        color: #5a67d8;
         margin-top: 8px;
         font-weight: 600;
       }
@@ -317,20 +328,20 @@
       <div class="legend-item">
         <div
           class="legend-dot"
-          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+          style="background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)"
         ></div>
         Gốc (1)
       </div>
       <div class="legend-item">
-        <div class="legend-dot" style="background: #48bb78"></div>
+        <div class="legend-dot" style="background: #38a169"></div>
         Nhóm chính (19)
       </div>
       <div class="legend-item">
-        <div class="legend-dot" style="background: #ed8936"></div>
+        <div class="legend-dot" style="background: #dd6b20"></div>
         Nhóm phụ (12)
       </div>
       <div class="legend-item">
-        <div class="legend-dot" style="background: #4299e1"></div>
+        <div class="legend-dot" style="background: #3182ce"></div>
         Bệnh (178)
       </div>
     </div>
@@ -342,9 +353,9 @@
     </div>
 
     <div class="panel help-panel">
-      <div><kbd>Click</kbd> Mở/đóng</div>
-      <div><kbd>Kéo</kbd> Di chuyển</div>
-      <div><kbd>Scroll</kbd> Zoom</div>
+      <div><kbd>Click nhanh</kbd> Mở/đóng node</div>
+      <div><kbd>Kéo thả</kbd> Di chuyển canvas</div>
+      <div><kbd>Scroll</kbd> Zoom in/out</div>
     </div>
 
     <div id="tooltip">
@@ -372,12 +383,12 @@
       let nodes = [],
         edges = [];
 
-      // Bảng màu hiện đại & chuyên nghiệp
+      // Bảng màu rõ nét & tương phản cao
       const COLORS = {
-        root: "#667eea", // Tím xanh gradient
-        category: "#48bb78", // Xanh lá tươi
-        subcategory: "#ed8936", // Cam ấm
-        disease: "#4299e1", // Xanh dương sáng
+        root: "#5a67d8", // Tím đậm
+        category: "#38a169", // Xanh lá đậm
+        subcategory: "#dd6b20", // Cam đậm
+        disease: "#3182ce", // Xanh dương đậm
       };
 
       const data = {
@@ -719,7 +730,7 @@
         nodes.push(root);
 
         const cats = Object.keys(data);
-        const catR = 400; // Bán kính vòng category
+        const catR = 450; // Tăng bán kính vòng category
 
         cats.forEach((catName, i) => {
           const ang = (i / cats.length) * Math.PI * 2 - Math.PI / 2;
@@ -730,8 +741,8 @@
             type: "category",
             x: cx + Math.cos(ang) * catR,
             y: cy + Math.sin(ang) * catR,
-            w: 130,
-            h: 50,
+            w: 140,
+            h: 55,
             expanded: false,
             visible: true,
             children: [],
@@ -744,13 +755,13 @@
           edges.push({ from: root, to: cat });
 
           const subs = Object.keys(data[catName]);
-          const subR = 250; // Bán kính từ category đến sub/disease
-          const diseaseR = 200; // Bán kính từ sub đến disease
+          const subR = 300; // Tăng bán kính từ category đến sub/disease
+          const diseaseR = 250; // Tăng bán kính từ sub đến disease
 
           if (subs.length === 1 && subs[0] === "_") {
             // Không có subcategory - disease nối thẳng
             const diseases = data[catName]["_"];
-            const spread = Math.min(Math.PI * 0.8, diseases.length * 0.12);
+            const spread = Math.min(Math.PI * 1.2, diseases.length * 0.18); // Tăng spread
             diseases.forEach((d, j) => {
               const dAng =
                 ang -
@@ -765,8 +776,8 @@
                 type: "disease",
                 x: cat.x + Math.cos(dAng) * subR,
                 y: cat.y + Math.sin(dAng) * subR,
-                w: 140,
-                h: 44,
+                w: 150,
+                h: 48,
                 expanded: false,
                 visible: false,
                 children: [],
@@ -779,7 +790,7 @@
             });
           } else {
             // Có subcategory
-            const subSpread = Math.min(Math.PI * 0.6, subs.length * 0.2);
+            const subSpread = Math.min(Math.PI * 0.8, subs.length * 0.28); // Tăng spread
             subs.forEach((subName, j) => {
               const subAng =
                 ang -
@@ -790,10 +801,10 @@
                 label: subName.replace(/^\d+\.\d+\s*/, ""),
                 labelFull: subName,
                 type: "subcategory",
-                x: cat.x + Math.cos(subAng) * (subR * 0.7),
-                y: cat.y + Math.sin(subAng) * (subR * 0.7),
-                w: 110,
-                h: 40,
+                x: cat.x + Math.cos(subAng) * (subR * 0.75),
+                y: cat.y + Math.sin(subAng) * (subR * 0.75),
+                w: 120,
+                h: 45,
                 expanded: false,
                 visible: false,
                 children: [],
@@ -806,7 +817,7 @@
               edges.push({ from: cat, to: sub });
 
               const diseases = data[catName][subName];
-              const dSpread = Math.min(Math.PI * 0.7, diseases.length * 0.1);
+              const dSpread = Math.min(Math.PI * 1.0, diseases.length * 0.15); // Tăng spread
               diseases.forEach((d, k) => {
                 const dAng =
                   subAng -
@@ -821,8 +832,8 @@
                   type: "disease",
                   x: sub.x + Math.cos(dAng) * diseaseR,
                   y: sub.y + Math.sin(dAng) * diseaseR,
-                  w: 140,
-                  h: 44,
+                  w: 150,
+                  h: 48,
                   expanded: false,
                   visible: false,
                   children: [],
@@ -853,7 +864,7 @@
       }
 
       function truncate(text, maxW) {
-        ctx.font = "600 11px Quicksand";
+        ctx.font = "700 12px Quicksand";
         if (ctx.measureText(text).width <= maxW) return text;
         while (ctx.measureText(text + "..").width > maxW && text.length > 2)
           text = text.slice(0, -1);
@@ -861,11 +872,8 @@
       }
 
       function draw() {
-        // Gradient background
-        const gradient = ctx.createLinearGradient(0, 0, W, H);
-        gradient.addColorStop(0, "#f5f7fa");
-        gradient.addColorStop(1, "#e8eef5");
-        ctx.fillStyle = gradient;
+        // Nền trắng rõ ràng
+        ctx.fillStyle = "#f8fafc";
         ctx.fillRect(0, 0, W, H);
 
         ctx.save();
@@ -879,8 +887,8 @@
           ctx.moveTo(e.from.x, e.from.y);
           ctx.lineTo(e.to.x, e.to.y);
           ctx.strokeStyle =
-            e.from.highlight || e.to.highlight ? "#f6ad55" : "#cbd5e0";
-          ctx.lineWidth = e.from.highlight || e.to.highlight ? 3 : 2;
+            e.from.highlight || e.to.highlight ? "#f6ad55" : "#d1d5db";
+          ctx.lineWidth = e.from.highlight || e.to.highlight ? 3.5 : 2.5;
           ctx.stroke();
         });
 
@@ -904,7 +912,7 @@
             }
 
             // Background with gradient for root node
-            roundRect(x - w / 2, y - h / 2, w, h, 12);
+            roundRect(x - w / 2, y - h / 2, w, h, 14);
             if (node.type === "root") {
               const grad = ctx.createLinearGradient(
                 x - w / 2,
@@ -912,8 +920,8 @@
                 x + w / 2,
                 y + h / 2
               );
-              grad.addColorStop(0, "#667eea");
-              grad.addColorStop(1, "#764ba2");
+              grad.addColorStop(0, "#5a67d8");
+              grad.addColorStop(1, "#6b46c1");
               ctx.fillStyle = grad;
             } else {
               ctx.fillStyle = color;
@@ -921,12 +929,17 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Border nếu có children
+            // Thêm viền để node nổi bật hơn
+            ctx.strokeStyle = "rgba(255,255,255,0.3)";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Border đậm nếu có children
             if (node.children.length > 0) {
               ctx.strokeStyle = node.expanded
                 ? "#fff"
-                : "rgba(255,255,255,0.5)";
-              ctx.lineWidth = 2;
+                : "rgba(255,255,255,0.6)";
+              ctx.lineWidth = 2.5;
               ctx.stroke();
             }
 
@@ -936,31 +949,31 @@
             ctx.textBaseline = "middle";
 
             if (node.type === "root") {
-              ctx.font = "700 16px Quicksand";
+              ctx.font = "700 18px Quicksand";
               ctx.fillText("🏥 " + node.label, x, y);
             } else if (node.type === "category") {
-              ctx.font = "700 12px Quicksand";
-              ctx.fillText(truncate(node.label, w - 16), x, y - 6);
+              ctx.font = "700 13px Quicksand";
+              ctx.fillText(truncate(node.label, w - 16), x, y - 7);
               if (node.children.length && !node.expanded) {
-                ctx.font = "500 10px Quicksand";
-                ctx.fillStyle = "rgba(255,255,255,0.85)";
-                ctx.fillText(`+${node.children.length}`, x, y + 10);
+                ctx.font = "600 11px Quicksand";
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillText(`+${node.children.length}`, x, y + 11);
               }
             } else if (node.type === "subcategory") {
-              ctx.font = "600 11px Quicksand";
-              ctx.fillText(truncate(node.label, w - 12), x, y - 5);
+              ctx.font = "700 12px Quicksand";
+              ctx.fillText(truncate(node.label, w - 12), x, y - 6);
               if (node.children.length && !node.expanded) {
-                ctx.font = "500 9px Quicksand";
-                ctx.fillStyle = "rgba(255,255,255,0.85)";
-                ctx.fillText(`+${node.children.length}`, x, y + 9);
+                ctx.font = "600 10px Quicksand";
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillText(`+${node.children.length}`, x, y + 10);
               }
             } else {
               // Disease - 2 dòng
+              ctx.font = "700 11px Quicksand";
+              ctx.fillText(truncate(node.label, w - 16), x, y - 7);
               ctx.font = "600 10px Quicksand";
-              ctx.fillText(truncate(node.label, w - 14), x, y - 6);
-              ctx.font = "500 9px Quicksand";
-              ctx.fillStyle = "rgba(255,255,255,0.85)";
-              ctx.fillText(truncate(node.labelVn, w - 14), x, y + 8);
+              ctx.fillStyle = "rgba(255,255,255,0.9)";
+              ctx.fillText(truncate(node.labelVn, w - 16), x, y + 9);
             }
           });
 
@@ -1010,10 +1023,10 @@
 
       function showTip(node, mx, my) {
         const types = {
-          root: ["Gốc", "#667eea"],
-          category: ["Nhóm chính", "#48bb78"],
-          subcategory: ["Nhóm phụ", "#ed8936"],
-          disease: ["Bệnh", "#4299e1"],
+          root: ["Gốc", "#5a67d8"],
+          category: ["Nhóm chính", "#38a169"],
+          subcategory: ["Nhóm phụ", "#dd6b20"],
+          disease: ["Bệnh", "#3182ce"],
         };
         const [t, c] = types[node.type];
         tooltip.querySelector(".tt-badge").textContent = t;
@@ -1048,38 +1061,79 @@
         tooltip.style.display = "none";
       }
 
-      // Events
+      // Events - Kéo canvas tự do
       canvas.addEventListener("mousedown", (e) => {
+        console.log("🖱️ Mouse down:", e.clientX, e.clientY);
         dragging = true;
         dragX = e.clientX;
         dragY = e.clientY;
         moved = false;
+        canvas.classList.add("dragging");
+        canvas.style.cursor = "grabbing";
+        // Lưu node đang hover để toggle sau nếu không kéo
+        hovered = nodeAt(e.clientX, e.clientY);
+        console.log("👆 Hovered node:", hovered ? hovered.label : "none");
       });
+
       canvas.addEventListener("mousemove", (e) => {
         if (dragging) {
-          const dx = e.clientX - dragX,
-            dy = e.clientY - dragY;
-          if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+          // Đang kéo - di chuyển canvas
+          const dx = e.clientX - dragX;
+          const dy = e.clientY - dragY;
+
+          // Nếu di chuyển > 3px thì coi là đang kéo (không phải click)
+          if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            if (!moved) {
+              console.log("🚀 Bắt đầu kéo! dx:", dx, "dy:", dy);
+            }
+            moved = true;
+          }
+
           offX += dx;
           offY += dy;
           dragX = e.clientX;
           dragY = e.clientY;
           hideTip();
         } else {
+          // Không kéo - chỉ hover để xem tooltip
           const n = nodeAt(e.clientX, e.clientY);
           hovered = n;
-          canvas.style.cursor = n ? "pointer" : "grab";
-          n ? showTip(n, e.clientX, e.clientY) : hideTip();
+          canvas.style.cursor = n ? "grab" : "grab"; // Luôn là grab để dễ kéo
+          if (n) {
+            showTip(n, e.clientX, e.clientY);
+          } else {
+            hideTip();
+          }
         }
       });
-      canvas.addEventListener("mouseup", () => {
+
+      canvas.addEventListener("mouseup", (e) => {
+        canvas.classList.remove("dragging");
+
+        // Nếu click nhanh (không kéo) và có node thì toggle
+        if (!moved && hovered) {
+          toggle(hovered);
+        }
+
         dragging = false;
-        if (!moved && hovered) toggle(hovered);
+        moved = false;
+
+        // Cập nhật lại cursor và tooltip
+        const n = nodeAt(e.clientX, e.clientY);
+        hovered = n;
+        canvas.style.cursor = "grab";
+        if (n) {
+          showTip(n, e.clientX, e.clientY);
+        }
       });
+
       canvas.addEventListener("mouseleave", () => {
         dragging = false;
+        moved = false;
         hovered = null;
         hideTip();
+        canvas.classList.remove("dragging");
+        canvas.style.cursor = "grab";
       });
       canvas.addEventListener(
         "wheel",
@@ -1202,10 +1256,15 @@
       }
 
       // Init
+      console.log("🎨 Khởi tạo ứng dụng...");
       window.addEventListener("resize", resize);
       resize();
+      console.log("📐 Canvas size:", W, "x", H);
       buildGraph();
+      console.log("🌳 Đã tạo", nodes.length, "nodes");
       draw();
+      console.log("✅ Ứng dụng sẵn sàng! Hãy thử kéo canvas.");
+      console.log("💡 Tip: Click và giữ chuột, sau đó kéo qua kéo lại!");
     </script>
   </body>
 </html>
