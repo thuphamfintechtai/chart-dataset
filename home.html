@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phân Loại Bệnh Da Liễu</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Quicksand", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+        overflow: hidden;
+      }
+
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 65px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 25px;
+        z-index: 1000;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        gap: 20px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-icon {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .logo-text {
+        font-weight: 700;
+        font-size: 17px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 11px 18px 11px 44px;
+        border: 1px solid #e0e4e8;
+        border-radius: 25px;
+        background: #f5f7f9;
+        color: #3d4f5f;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+
+      .search-box input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .search-box::before {
+        content: "🔍";
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 9px 16px;
+        border: 1px solid #e0e4e8;
+        border-radius: 20px;
+        background: #fff;
+        color: #5a6a7a;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn:hover {
+        background: #f0f4f8;
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+      }
+
+      #canvas {
+        position: fixed;
+        top: 65px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        cursor: grab;
+      }
+
+      .panel {
+        position: fixed;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        z-index: 100;
+        padding: 16px 20px;
+      }
+
+      .legend-panel {
+        left: 20px;
+        bottom: 20px;
+      }
+
+      .legend-title {
+        font-size: 11px;
+        color: #8a9aa8;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        font-size: 13px;
+        color: #5a6a7a;
+      }
+
+      .legend-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+      }
+
+      .zoom-panel {
+        right: 20px;
+        bottom: 20px;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .zoom-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: #f5f7f9;
+        color: #5a6a7a;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .zoom-btn:hover {
+        background: #e8ecf0;
+        color: #3d4f5f;
+      }
+
+      .help-panel {
+        right: 20px;
+        top: 85px;
+        font-size: 12px;
+        color: #8a9aa8;
+      }
+
+      .help-panel div {
+        padding: 4px 0;
+      }
+      .help-panel kbd {
+        background: #f0f4f8;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: inherit;
+      }
+
+      #tooltip {
+        position: fixed;
+        background: #fff;
+        padding: 14px 18px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        border: 1px solid #e8ecf0;
+        max-width: 320px;
+        display: none;
+        z-index: 2000;
+        pointer-events: none;
+      }
+
+      .tt-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        color: #fff;
+      }
+
+      .tt-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #3d4f5f;
+      }
+      .tt-sub {
+        font-size: 13px;
+        color: #6b9080;
+        margin-top: 4px;
+      }
+      .tt-path {
+        font-size: 11px;
+        color: #8a9aa8;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e8ecf0;
+      }
+      .tt-hint {
+        font-size: 11px;
+        color: #667eea;
+        margin-top: 8px;
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        .logo-text {
+          display: none;
+        }
+        .search-box {
+          max-width: 180px;
+        }
+        .btn span:last-child {
+          display: none;
+        }
+        .help-panel {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">🏥</div>
+        <span class="logo-text">Phân Loại Bệnh Da Liễu</span>
+      </div>
+      <div class="search-box">
+        <input type="text" id="search" placeholder="Tìm kiếm bệnh..." />
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="collapseAll()">
+          <span>📁</span> <span>Thu gọn</span>
+        </button>
+        <button class="btn" onclick="expandAll()">
+          <span>📂</span> <span>Mở hết</span>
+        </button>
+        <button class="btn btn-primary" onclick="resetView()">
+          <span>↻</span> <span>Reset</span>
+        </button>
+      </div>
+    </header>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="panel legend-panel">
+      <div class="legend-title">Chú thích</div>
+      <div class="legend-item">
+        <div
+          class="legend-dot"
+          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        ></div>
+        Gốc (1)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #48bb78"></div>
+        Nhóm chính (19)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #ed8936"></div>
+        Nhóm phụ (12)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: #4299e1"></div>
+        Bệnh (178)
+      </div>
+    </div>
+
+    <div class="panel zoom-panel">
+      <button class="zoom-btn" onclick="zoomIn()">+</button>
+      <button class="zoom-btn" onclick="zoomOut()">−</button>
+      <button class="zoom-btn" onclick="resetView()">⟲</button>
+    </div>
+
+    <div class="panel help-panel">
+      <div><kbd>Click</kbd> Mở/đóng</div>
+      <div><kbd>Kéo</kbd> Di chuyển</div>
+      <div><kbd>Scroll</kbd> Zoom</div>
+    </div>
+
+    <div id="tooltip">
+      <div class="tt-badge"></div>
+      <div class="tt-title"></div>
+      <div class="tt-sub"></div>
+      <div class="tt-path"></div>
+      <div class="tt-hint"></div>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const tooltip = document.getElementById("tooltip");
+
+      let W, H, cx, cy;
+      let scale = 0.6,
+        offX = 0,
+        offY = 0;
+      let dragging = false,
+        dragX,
+        dragY,
+        moved = false;
+      let hovered = null;
+      let nodes = [],
+        edges = [];
+
+      // Bảng màu hiện đại & chuyên nghiệp
+      const COLORS = {
+        root: "#667eea", // Tím xanh gradient
+        category: "#48bb78", // Xanh lá tươi
+        subcategory: "#ed8936", // Cam ấm
+        disease: "#4299e1", // Xanh dương sáng
+      };
+
+      const data = {
+        "1. NHIỄM TRÙNG DA": {
+          "1.1 Vi khuẩn": [
+            ["Abscess", "Áp xe"],
+            ["Bacterial Skin Infection", "Nhiễm trùng da do vi khuẩn"],
+            ["Cellulitis", "Viêm tế bào mô"],
+            [
+              "Cellulitis Impetigo and other Bacterial Infections",
+              "Viêm tế bào mô, chốc lở",
+            ],
+            ["Impetigo", "Chốc lở"],
+            ["Folliculitis", "Viêm nang lông"],
+            ["Furuncle", "Nhọt"],
+            ["Staphylococcal Scalded Skin Syndrome", "Hội chứng da bỏng rộp"],
+            ["Pyoderma Gangrenosum", "Hoại tử da mủ"],
+            ["Hansen's Disease – Leprosy", "Bệnh Phong"],
+            ["Leprosy (Hansen)", "Phong"],
+          ],
+          "1.2 Virus": [
+            ["AIDS", "AIDS"],
+            ["Chickenpox", "Thủy đậu"],
+            ["Cowpox", "Đậu bò"],
+            ["Monkeypox", "Đậu mùa khỉ"],
+            ["Measles", "Sởi"],
+            ["Hand Foot and mouth Disease", "Tay chân miệng"],
+            ["Herpes Simplex", "Herpes đơn giản"],
+            ["Herpes Zoster", "Zona"],
+            ["Shingles", "Zona"],
+            ["Herpes HPV and other STDs", "Herpes, HPV"],
+            ["Molluscum Contagiosum", "Molluscum"],
+            ["Contagiosum Molluscum", "Molluscum"],
+            ["Warts", "Mụn cóc"],
+            ["Genital Warts", "Mụn cóc sinh dục"],
+            ["Verruca Plana", "Mụn cóc phẳng"],
+            [
+              "Warts Molluscum and other viral Infections",
+              "Mụn cóc, Molluscum",
+            ],
+            ["Viral exanthem", "Phát ban virus"],
+            ["Viral Infections", "Nhiễm virus"],
+          ],
+          "1.3 Nấm": [
+            ["Tinea", "Nấm da"],
+            ["Tinea corporis", "Nấm thân"],
+            ["Tinea Cruris", "Nấm háng"],
+            ["Tinea Faciei", "Nấm mặt"],
+            ["Tinea Manuum", "Nấm tay"],
+            ["Tinea Pedis", "Nấm chân"],
+            ["Athlete Foot", "Nấm chân"],
+            ["Tinea versicolor", "Nấm màu"],
+            ["Ringworm", "Nấm vòng"],
+            ["Candidiasis", "Nấm Candida"],
+            ["Candida Intertrigo", "Nấm kẽ"],
+            ["Candidiasis infant", "Nấm trẻ em"],
+            ["Candidas Ringworm tinea", "Nấm Candida"],
+            ["Nail Fungus", "Nấm móng"],
+            ["Nail Fungus and other nail", "Nấm móng"],
+            [
+              "Tinea Ringworm Candidiasis and Other fungal Infections",
+              "Nhiễm nấm",
+            ],
+          ],
+          "1.4 Ký sinh trùng": [
+            ["Scabies", "Ghẻ"],
+            [
+              "Scabies Lyme disease and other Infestations and bites",
+              "Ghẻ, Lyme",
+            ],
+            ["Cutaneous Larva migrans", "Sán da"],
+            ["Leishmaniasis", "Leishmaniasis"],
+            ["Tungiasis", "Bọ chét"],
+            ["Infestations bites", "Côn trùng cắn"],
+            ["Insect bite", "Côn trùng cắn"],
+            ["Flea Allergy", "Dị ứng bọ chét"],
+          ],
+        },
+        "2. VIÊM DA & CHÀM": {
+          "2.1 Chàm": [
+            ["Eczema", "Chàm"],
+            ["Atopic Dermatitis", "Viêm da cơ địa"],
+            ["Chronic Eczema", "Chàm mãn tính"],
+            ["Subacute Eczema", "Chàm bán cấp"],
+            ["Hand Eczema", "Chàm tay"],
+            ["Dyshidrotic Eczema", "Chàm mồ hôi"],
+            ["Nummular eczema", "Chàm đồng xu"],
+            ["Xerotic Eczema", "Chàm khô"],
+            ["Pompholyx", "Chàm bóng nước"],
+            ["Miliaria", "Rôm sảy"],
+          ],
+          "2.2 Viêm da tiếp xúc": [
+            ["Allergic Contact Dermatitis", "Viêm da dị ứng"],
+            ["Poison Ivy and other contact dermatitis", "Viêm da tiếp xúc"],
+          ],
+          "2.3 Viêm da khác": [
+            ["Dermatitis", "Viêm da"],
+            ["Seborrheic Dermatitis", "Viêm da tiết bã"],
+            ["Perioral Dermatitis", "Viêm da quanh miệng"],
+            ["Dermatitis Stasis", "Viêm da ứ trệ"],
+          ],
+        },
+        "3. VẢY NẾN": {
+          "3.1 Psoriasis": [
+            ["Psoriasis", "Vảy nến"],
+            ["Psoriasis Chronic Plaque", "Vảy nến mảng"],
+            ["Guttate Psoriasis", "Vảy nến giọt"],
+            ["Psoriasis Pustular", "Vảy nến mủ"],
+            ["Psoriasis Erythrodermic", "Vảy nến đỏ da"],
+            ["Nail Psoriasis", "Vảy nến móng"],
+            ["Psoriasis Pitting", "Vảy nến lõm móng"],
+            ["Psoriasis Digits", "Vảy nến ngón"],
+            ["Psoriasis Anal", "Vảy nến hậu môn"],
+            ["Psoriasis Umbilicus", "Vảy nến rốn"],
+            ["Psoriasis Cellulitis", "Vảy nến viêm"],
+            ["Psoriatic Arthritis", "Viêm khớp vảy nến"],
+            ["Palmoplantar Pustulosis", "Mụn mủ lòng bàn"],
+            ["Psoriasis Lichen Planus and Related Diseases", "Vảy nến, Lichen"],
+          ],
+          "3.2 Lichen": [
+            ["Lichen", "Lichen"],
+            ["Lichen Simplex Chronicus", "Lichen mãn tính"],
+            ["Lichen Sclerosus", "Lichen xơ cứng"],
+          ],
+        },
+        "4. MỤN & ROSACEA": {
+          _: [
+            ["Acne", "Mụn trứng cá"],
+            ["Acne and Rosacea", "Mụn và Rosacea"],
+            ["Rosacea", "Rosacea"],
+            ["Blackheads", "Mụn đầu đen"],
+            ["Whiteheads", "Mụn đầu trắng"],
+          ],
+        },
+        "5. BỆNH BÓNG NƯỚC": {
+          _: [
+            ["Bullous", "Bóng nước"],
+            ["Bullous Pemphigoid", "Pemphigoid"],
+            ["Epidermolysis Bullosa", "Bong biểu bì"],
+            ["Epidermolysis Bullosa Pruriginosa", "Bong biểu bì ngứa"],
+          ],
+        },
+        "6. RỐI LOẠN SẮC TỐ": {
+          "6.1 Tăng sắc tố": [
+            ["Hyperpigmentation", "Tăng sắc tố"],
+            ["Lentigo", "Đồi mồi"],
+            ["Freckles", "Tàn nhang"],
+            ["Blackspot", "Đốm đen"],
+            ["Darkcircle", "Thâm mắt"],
+          ],
+          "6.2 Giảm sắc tố": [
+            ["Hypopigmentation", "Giảm sắc tố"],
+            ["Vitiligo", "Bạch biến"],
+            ["Nevus Depigmentosus", "Nevi mất sắc tố"],
+          ],
+          "6.3 Khác": [
+            ["Light disease and Disorders of pigmentation", "Rối loạn sắc tố"],
+          ],
+        },
+        "7. U & TÂN SINH": {
+          "7.1 U lành tính": [
+            ["Benign Tumors", "U lành"],
+            ["Benign Keratosis like lesion", "Sừng hóa lành"],
+            ["Dermatofibroma", "U xơ da"],
+            ["Angiofibroma", "U xơ mạch"],
+            ["Skin Tag", "Mụn thịt"],
+            ["Epidermal Cyst", "Nang biểu bì"],
+            ["Inflamed Cyst", "Nang viêm"],
+            ["Steatocystoma", "Nang bã"],
+            ["Keratocanthoma", "U sừng"],
+            ["Juvenile Xanthogranuloma", "U hạt vàng"],
+            ["Xanthelasma", "Vàng mí mắt"],
+            ["Neurofibromatosis", "U xơ thần kinh"],
+            ["Confluent Reticulated Papillomatosis", "U nhú lưới"],
+          ],
+          "7.2 U ác tính": [
+            ["Malignant", "Ác tính"],
+            ["Skin cancer", "Ung thư da"],
+            ["Melanoma", "Melanoma"],
+            ["Melona", "Melanoma"],
+            ["Melanoma skin cancer nevi and moles", "Melanoma, nevi"],
+            ["Basal Cell Carcinoma", "Ung thư tế bào đáy"],
+            ["Squamous Cell Carcinoma", "Ung thư tế bào vảy"],
+            ["Non-Melanoma Skin Cancer", "Ung thư không melanoma"],
+            ["Bowen's Disease", "Bệnh Bowen"],
+          ],
+          "7.3 Tiền ung thư": [
+            ["Actinic Keratosis", "Sừng hóa ánh sáng"],
+            [
+              "Actinic Keratosis Basal Cell Carcinoma and other malignant lesion",
+              "Sừng hóa, ung thư",
+            ],
+          ],
+        },
+        "8. NEVI & NỐT RUỒI": {
+          _: [
+            ["Moles (Nevus)", "Nốt ruồi"],
+            ["Melanocytic nevus", "Nevi hắc tố"],
+            ["Congenital nevus", "Nevi bẩm sinh"],
+            ["Blue nevus", "Nevi xanh"],
+            ["Becker's nevus", "Nevi Becker"],
+            ["Epidermal Nevus", "Nevi biểu bì"],
+            ["Organoid Nevus", "Nevi cơ quan"],
+            ["Ota nevus", "Nevi Ota"],
+          ],
+        },
+        "9. U MẠCH MÁU": {
+          _: [
+            ["Vascular", "Mạch máu"],
+            ["Vascular lesion", "Tổn thương mạch"],
+            ["Vascular Tumors", "U mạch"],
+            ["Hemangioma", "U máu"],
+            ["Lymphangioma", "U bạch huyết"],
+            ["Angiokeratoma", "U sừng mạch"],
+          ],
+        },
+        "10. VIÊM MẠCH": {
+          _: [
+            ["Vasculitis", "Viêm mạch"],
+            ["Urticarial Vasculitis", "Viêm mạch mày đay"],
+          ],
+        },
+        "11. MÀY ĐAY": {
+          _: [
+            ["Urticaria Hives", "Mày đay"],
+            ["Urticaria Pigmentosa", "Mày đay sắc tố"],
+          ],
+        },
+        "12. BAN ĐỎ": {
+          _: [
+            ["Erythema", "Ban đỏ"],
+            ["Erythema multiforme", "Ban đỏ đa hình"],
+            ["Erythema nodosum", "Ban đỏ nốt"],
+            ["Erythema Annulare Centrifugum", "Ban đỏ vòng"],
+            ["Erythema Chronicum migrans", "Ban đỏ di chuyển"],
+            ["Erythema marginatum", "Ban đỏ viền"],
+            ["Erythema Infections", "Nhiễm trùng ban đỏ"],
+          ],
+        },
+        "13. PHÁT BAN DO THUỐC": {
+          _: [
+            ["Drug Eruption", "Phát ban thuốc"],
+            ["Exanthems and drug Eruptions", "Phát ban"],
+            ["Acute Generalized Exanthematous Pustulosis", "Mụn mủ cấp"],
+            ["SJS-TEN", "Stevens-Johnson"],
+            ["Phototoxic Reaction", "Phản ứng quang độc"],
+          ],
+        },
+        "14. TỰ MIỄN": {
+          _: [
+            ["Lupus", "Lupus"],
+            ["Lupus Erythematosus Chronicus Discoides", "Lupus dạng đĩa"],
+            ["Lupus Planus", "Lupus phẳng"],
+            ["Lupus and other connective tissue", "Lupus, mô liên kết"],
+            ["Lumpus connective tissue disease", "Bệnh mô liên kết"],
+            ["Morphea", "Xơ cứng khu trú"],
+            ["Selenosis Tuberous", "Xơ cứng củ"],
+          ],
+        },
+        "15. RỤNG TÓC": {
+          _: [
+            ["Alopecia", "Rụng tóc"],
+            ["Alopecia Areata", "Rụng tóc mảng"],
+            ["Hair loss photos alopecia", "Hói đầu"],
+          ],
+        },
+        "16. SỪNG HÓA": {
+          _: [
+            ["Hyperkeratosis", "Tăng sừng"],
+            ["Keratosis Pilaris", "Sừng nang lông"],
+            ["Seborrheic Keratoses", "Sừng tiết bã"],
+            [
+              "Seborrheic Keratoses and other Benign Tumors",
+              "Sừng tiết bã, u lành",
+            ],
+            ["Porokeratosis", "Sừng lỗ chân lông"],
+            ["Harlequin ichthyosis", "Bệnh cá hề"],
+            ["Daner's Disease", "Bệnh Darier"],
+          ],
+        },
+        "17. U HẠT": {
+          _: [
+            ["Granuloma", "U hạt"],
+            ["Annulare Granuloma", "U hạt vòng"],
+          ],
+        },
+        "18. PRURIGO": {
+          _: [
+            ["Pringo Nodularis", "Prurigo nốt"],
+            ["Prurigo Pigmentosa", "Prurigo sắc tố"],
+          ],
+        },
+        "19. BỆNH KHÁC": {
+          _: [
+            ["Pityriasis Rosea", "Phấn hồng"],
+            ["Pityriasis Rubra pilaris", "Pityriasis rubra"],
+            ["Desquamation", "Bong vảy"],
+            ["Chapped Fissured Feet", "Nứt chân"],
+            ["Red Scaly Rash", "Phát ban vảy"],
+            ["Sunlight damage", "Tổn thương nắng"],
+            ["Wrinkle", "Nếp nhăn"],
+            ["Disease", "Bệnh"],
+            ["System Disease", "Bệnh hệ thống"],
+            ["Infected", "Nhiễm trùng"],
+            ["Non-Infected", "Không nhiễm"],
+            ["Unknown normal", "Bình thường"],
+            ["Hailey Hailey Disease", "Hailey Hailey"],
+          ],
+        },
+      };
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight - 65;
+        cx = W / 2;
+        cy = H / 2;
+      }
+
+      function buildGraph() {
+        nodes = [];
+        edges = [];
+
+        // Root
+        const root = {
+          id: "root",
+          label: "DA LIỄU",
+          labelVn: "Dermatology",
+          type: "root",
+          x: cx,
+          y: cy,
+          w: 120,
+          h: 60,
+          expanded: true,
+          visible: true,
+          children: [],
+          parent: null,
+          path: "DA LIỄU",
+        };
+        nodes.push(root);
+
+        const cats = Object.keys(data);
+        const catR = 400; // Bán kính vòng category
+
+        cats.forEach((catName, i) => {
+          const ang = (i / cats.length) * Math.PI * 2 - Math.PI / 2;
+          const cat = {
+            id: `c${i}`,
+            label: catName.replace(/^\d+\.\s*/, ""),
+            labelFull: catName,
+            type: "category",
+            x: cx + Math.cos(ang) * catR,
+            y: cy + Math.sin(ang) * catR,
+            w: 130,
+            h: 50,
+            expanded: false,
+            visible: true,
+            children: [],
+            parent: root,
+            path: `DA LIỄU → ${catName}`,
+            ang,
+          };
+          nodes.push(cat);
+          root.children.push(cat);
+          edges.push({ from: root, to: cat });
+
+          const subs = Object.keys(data[catName]);
+          const subR = 250; // Bán kính từ category đến sub/disease
+          const diseaseR = 200; // Bán kính từ sub đến disease
+
+          if (subs.length === 1 && subs[0] === "_") {
+            // Không có subcategory - disease nối thẳng
+            const diseases = data[catName]["_"];
+            const spread = Math.min(Math.PI * 0.8, diseases.length * 0.12);
+            diseases.forEach((d, j) => {
+              const dAng =
+                ang -
+                spread / 2 +
+                (diseases.length > 1
+                  ? (j / (diseases.length - 1)) * spread
+                  : 0);
+              const disease = {
+                id: `d${i}_${j}`,
+                label: d[0],
+                labelVn: d[1],
+                type: "disease",
+                x: cat.x + Math.cos(dAng) * subR,
+                y: cat.y + Math.sin(dAng) * subR,
+                w: 140,
+                h: 44,
+                expanded: false,
+                visible: false,
+                children: [],
+                parent: cat,
+                path: `DA LIỄU → ${catName} → ${d[0]}`,
+              };
+              nodes.push(disease);
+              cat.children.push(disease);
+              edges.push({ from: cat, to: disease });
+            });
+          } else {
+            // Có subcategory
+            const subSpread = Math.min(Math.PI * 0.6, subs.length * 0.2);
+            subs.forEach((subName, j) => {
+              const subAng =
+                ang -
+                subSpread / 2 +
+                (subs.length > 1 ? (j / (subs.length - 1)) * subSpread : 0);
+              const sub = {
+                id: `s${i}_${j}`,
+                label: subName.replace(/^\d+\.\d+\s*/, ""),
+                labelFull: subName,
+                type: "subcategory",
+                x: cat.x + Math.cos(subAng) * (subR * 0.7),
+                y: cat.y + Math.sin(subAng) * (subR * 0.7),
+                w: 110,
+                h: 40,
+                expanded: false,
+                visible: false,
+                children: [],
+                parent: cat,
+                path: `DA LIỄU → ${catName} → ${subName}`,
+                ang: subAng,
+              };
+              nodes.push(sub);
+              cat.children.push(sub);
+              edges.push({ from: cat, to: sub });
+
+              const diseases = data[catName][subName];
+              const dSpread = Math.min(Math.PI * 0.7, diseases.length * 0.1);
+              diseases.forEach((d, k) => {
+                const dAng =
+                  subAng -
+                  dSpread / 2 +
+                  (diseases.length > 1
+                    ? (k / (diseases.length - 1)) * dSpread
+                    : 0);
+                const disease = {
+                  id: `d${i}_${j}_${k}`,
+                  label: d[0],
+                  labelVn: d[1],
+                  type: "disease",
+                  x: sub.x + Math.cos(dAng) * diseaseR,
+                  y: sub.y + Math.sin(dAng) * diseaseR,
+                  w: 140,
+                  h: 44,
+                  expanded: false,
+                  visible: false,
+                  children: [],
+                  parent: sub,
+                  path: `DA LIỄU → ${catName} → ${subName} → ${d[0]}`,
+                };
+                nodes.push(disease);
+                sub.children.push(disease);
+                edges.push({ from: sub, to: disease });
+              });
+            });
+          }
+        });
+      }
+
+      function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      }
+
+      function truncate(text, maxW) {
+        ctx.font = "600 11px Quicksand";
+        if (ctx.measureText(text).width <= maxW) return text;
+        while (ctx.measureText(text + "..").width > maxW && text.length > 2)
+          text = text.slice(0, -1);
+        return text + "..";
+      }
+
+      function draw() {
+        // Gradient background
+        const gradient = ctx.createLinearGradient(0, 0, W, H);
+        gradient.addColorStop(0, "#f5f7fa");
+        gradient.addColorStop(1, "#e8eef5");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.save();
+        ctx.translate(offX, offY);
+        ctx.scale(scale, scale);
+
+        // Edges
+        edges.forEach((e) => {
+          if (!e.from.visible || !e.to.visible) return;
+          ctx.beginPath();
+          ctx.moveTo(e.from.x, e.from.y);
+          ctx.lineTo(e.to.x, e.to.y);
+          ctx.strokeStyle =
+            e.from.highlight || e.to.highlight ? "#f6ad55" : "#cbd5e0";
+          ctx.lineWidth = e.from.highlight || e.to.highlight ? 3 : 2;
+          ctx.stroke();
+        });
+
+        // Nodes
+        nodes
+          .filter((n) => n.visible)
+          .forEach((node) => {
+            const color = COLORS[node.type];
+            let { x, y, w, h } = node;
+
+            // Hover effect
+            if (node === hovered) {
+              ctx.shadowColor = color;
+              ctx.shadowBlur = 15;
+              w *= 1.03;
+              h *= 1.03;
+            }
+            if (node.highlight) {
+              ctx.shadowColor = "#f6ad55";
+              ctx.shadowBlur = 25;
+            }
+
+            // Background with gradient for root node
+            roundRect(x - w / 2, y - h / 2, w, h, 12);
+            if (node.type === "root") {
+              const grad = ctx.createLinearGradient(
+                x - w / 2,
+                y - h / 2,
+                x + w / 2,
+                y + h / 2
+              );
+              grad.addColorStop(0, "#667eea");
+              grad.addColorStop(1, "#764ba2");
+              ctx.fillStyle = grad;
+            } else {
+              ctx.fillStyle = color;
+            }
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Border nếu có children
+            if (node.children.length > 0) {
+              ctx.strokeStyle = node.expanded
+                ? "#fff"
+                : "rgba(255,255,255,0.5)";
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            }
+
+            // Text
+            ctx.fillStyle = "#fff";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            if (node.type === "root") {
+              ctx.font = "700 16px Quicksand";
+              ctx.fillText("🏥 " + node.label, x, y);
+            } else if (node.type === "category") {
+              ctx.font = "700 12px Quicksand";
+              ctx.fillText(truncate(node.label, w - 16), x, y - 6);
+              if (node.children.length && !node.expanded) {
+                ctx.font = "500 10px Quicksand";
+                ctx.fillStyle = "rgba(255,255,255,0.85)";
+                ctx.fillText(`+${node.children.length}`, x, y + 10);
+              }
+            } else if (node.type === "subcategory") {
+              ctx.font = "600 11px Quicksand";
+              ctx.fillText(truncate(node.label, w - 12), x, y - 5);
+              if (node.children.length && !node.expanded) {
+                ctx.font = "500 9px Quicksand";
+                ctx.fillStyle = "rgba(255,255,255,0.85)";
+                ctx.fillText(`+${node.children.length}`, x, y + 9);
+              }
+            } else {
+              // Disease - 2 dòng
+              ctx.font = "600 10px Quicksand";
+              ctx.fillText(truncate(node.label, w - 14), x, y - 6);
+              ctx.font = "500 9px Quicksand";
+              ctx.fillStyle = "rgba(255,255,255,0.85)";
+              ctx.fillText(truncate(node.labelVn, w - 14), x, y + 8);
+            }
+          });
+
+        ctx.restore();
+        requestAnimationFrame(draw);
+      }
+
+      function toggle(node) {
+        if (!node.children.length) return;
+        node.expanded = !node.expanded;
+        node.children.forEach((c) => {
+          c.visible = node.expanded;
+          if (!node.expanded) {
+            c.expanded = false;
+            hide(c);
+          }
+        });
+      }
+
+      function hide(node) {
+        node.children.forEach((c) => {
+          c.visible = false;
+          c.expanded = false;
+          hide(c);
+        });
+      }
+
+      function toWorld(sx, sy) {
+        return { x: (sx - offX) / scale, y: (sy - offY) / scale };
+      }
+
+      function nodeAt(sx, sy) {
+        const { x, y } = toWorld(sx, sy - 65);
+        for (let i = nodes.length - 1; i >= 0; i--) {
+          const n = nodes[i];
+          if (!n.visible) continue;
+          if (
+            x >= n.x - n.w / 2 &&
+            x <= n.x + n.w / 2 &&
+            y >= n.y - n.h / 2 &&
+            y <= n.y + n.h / 2
+          )
+            return n;
+        }
+        return null;
+      }
+
+      function showTip(node, mx, my) {
+        const types = {
+          root: ["Gốc", "#667eea"],
+          category: ["Nhóm chính", "#48bb78"],
+          subcategory: ["Nhóm phụ", "#ed8936"],
+          disease: ["Bệnh", "#4299e1"],
+        };
+        const [t, c] = types[node.type];
+        tooltip.querySelector(".tt-badge").textContent = t;
+        tooltip.querySelector(".tt-badge").style.background = c;
+        tooltip.querySelector(".tt-badge").style.color = "#fff";
+        tooltip.querySelector(".tt-title").textContent =
+          node.labelFull || node.label;
+        tooltip.querySelector(".tt-sub").textContent = node.labelVn || "";
+        tooltip.querySelector(".tt-sub").style.display = node.labelVn
+          ? "block"
+          : "none";
+        tooltip.querySelector(".tt-path").textContent = "📍 " + node.path;
+        tooltip.querySelector(".tt-hint").textContent = node.children.length
+          ? node.expanded
+            ? "Click để thu gọn"
+            : `Click để mở ${node.children.length} mục`
+          : "";
+        tooltip.querySelector(".tt-hint").style.display = node.children.length
+          ? "block"
+          : "none";
+
+        let l = mx + 12,
+          t2 = my + 12;
+        if (l + 300 > W) l = mx - 310;
+        if (t2 + 160 > H + 65) t2 = my - 170;
+        tooltip.style.left = l + "px";
+        tooltip.style.top = t2 + "px";
+        tooltip.style.display = "block";
+      }
+
+      function hideTip() {
+        tooltip.style.display = "none";
+      }
+
+      // Events
+      canvas.addEventListener("mousedown", (e) => {
+        dragging = true;
+        dragX = e.clientX;
+        dragY = e.clientY;
+        moved = false;
+      });
+      canvas.addEventListener("mousemove", (e) => {
+        if (dragging) {
+          const dx = e.clientX - dragX,
+            dy = e.clientY - dragY;
+          if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+          offX += dx;
+          offY += dy;
+          dragX = e.clientX;
+          dragY = e.clientY;
+          hideTip();
+        } else {
+          const n = nodeAt(e.clientX, e.clientY);
+          hovered = n;
+          canvas.style.cursor = n ? "pointer" : "grab";
+          n ? showTip(n, e.clientX, e.clientY) : hideTip();
+        }
+      });
+      canvas.addEventListener("mouseup", () => {
+        dragging = false;
+        if (!moved && hovered) toggle(hovered);
+      });
+      canvas.addEventListener("mouseleave", () => {
+        dragging = false;
+        hovered = null;
+        hideTip();
+      });
+      canvas.addEventListener(
+        "wheel",
+        (e) => {
+          e.preventDefault();
+          const d = e.deltaY > 0 ? 0.9 : 1.1;
+          const ns = Math.max(0.15, Math.min(2.5, scale * d));
+          const mx = e.clientX,
+            my = e.clientY - 65;
+          offX = mx - (mx - offX) * (ns / scale);
+          offY = my - (my - offY) * (ns / scale);
+          scale = ns;
+        },
+        { passive: false }
+      );
+
+      // Touch
+      let lastD = 0;
+      canvas.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          dragging = true;
+          dragX = e.touches[0].clientX;
+          dragY = e.touches[0].clientY;
+          moved = false;
+        } else if (e.touches.length === 2)
+          lastD = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+      });
+      canvas.addEventListener(
+        "touchmove",
+        (e) => {
+          e.preventDefault();
+          if (e.touches.length === 1 && dragging) {
+            const dx = e.touches[0].clientX - dragX,
+              dy = e.touches[0].clientY - dragY;
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+            offX += dx;
+            offY += dy;
+            dragX = e.touches[0].clientX;
+            dragY = e.touches[0].clientY;
+          } else if (e.touches.length === 2) {
+            const d = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            if (lastD)
+              scale = Math.max(0.15, Math.min(2.5, (scale * d) / lastD));
+            lastD = d;
+          }
+        },
+        { passive: false }
+      );
+      canvas.addEventListener("touchend", (e) => {
+        dragging = false;
+        lastD = 0;
+        if (!moved && e.changedTouches.length === 1) {
+          const n = nodeAt(
+            e.changedTouches[0].clientX,
+            e.changedTouches[0].clientY
+          );
+          if (n) toggle(n);
+        }
+      });
+
+      // Search
+      document.getElementById("search").addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        nodes.forEach((n) => (n.highlight = false));
+        if (!q) return;
+        nodes.forEach((n) => {
+          if (
+            n.label.toLowerCase().includes(q) ||
+            (n.labelVn && n.labelVn.toLowerCase().includes(q)) ||
+            (n.labelFull && n.labelFull.toLowerCase().includes(q))
+          ) {
+            n.highlight = true;
+            n.visible = true;
+            let p = n.parent;
+            while (p) {
+              p.expanded = true;
+              p.highlight = true;
+              p.children.forEach((c) => (c.visible = true));
+              p = p.parent;
+            }
+          }
+        });
+      });
+
+      // Controls
+      function zoomIn() {
+        scale = Math.min(2.5, scale * 1.3);
+      }
+      function zoomOut() {
+        scale = Math.max(0.15, scale * 0.7);
+      }
+      function resetView() {
+        scale = 0.6;
+        offX = 0;
+        offY = 0;
+        nodes.forEach((n) => (n.highlight = false));
+        document.getElementById("search").value = "";
+      }
+      function expandAll() {
+        nodes.forEach((n) => {
+          n.expanded = true;
+          n.visible = true;
+        });
+        scale = 0.15;
+        offX = W * 0.42;
+        offY = H * 0.42;
+      }
+      function collapseAll() {
+        nodes.forEach((n) => {
+          n.visible = n.type === "root" || n.type === "category";
+          n.expanded = n.type === "root";
+        });
+        resetView();
+      }
+
+      // Init
+      window.addEventListener("resize", resize);
+      resize();
+      buildGraph();
+      draw();
+    </script>
+  </body>
+</html>
